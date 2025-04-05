@@ -1,26 +1,12 @@
 steps:
-  # Install dependencies
-  - name: 'node:20'
-    entrypoint: 'npm'
-    args: ['install']
-
-  # Build the React app
-  - name: 'node:20'
-    entrypoint: 'npm'
-    args: ['run', 'build']
-
-  # Copy app.yaml into the build directory
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
     args:
-      - '-c'
-      - 'cp app.yaml build/'
+      [
+        "-c",
+        "gcloud config set app/cloud_build_timeout 1600 && gcloud app deploy",
+      ]
+timeout: "1600s"
 
-  # Deploy from the build directory
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['app', 'deploy', '--quiet']
-    dir: 'build'
-
-timeout: '900s'
 options:
   logging: CLOUD_LOGGING_ONLY
