@@ -1,3 +1,4 @@
+service: frontend-two
 runtime: nodejs20
 
 handlers:
