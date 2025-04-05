@@ -14,7 +14,7 @@ function Noteuser() {
 
   const getNote = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/getNote");
+      const response = await axios.get("http://34.72.240.54/getNote");
       setNote(response.data);
     } catch (error) {
       console.error("Error fetching notes:", error);
@@ -23,7 +23,7 @@ function Noteuser() {
 
   const deleteNote = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/delete-Note/${id}`); 
+      await axios.delete(`http://34.72.240.54/delete-Note/${id}`); 
       getNote(); // 
     } catch (error) {
       console.error("Error deleting note:", error);
