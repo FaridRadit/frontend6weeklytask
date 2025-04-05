@@ -13,7 +13,7 @@ function EditNote() {
     const Editnote = async (e) => {
         e.preventDefault();
         try {
-            await axios.patch(`http://34.72.240.54/updateNote/${id}`, { 
+            await axios.patch(`https://backend-service-130852023885.us-central1.run.app/updateNote/${id}`, { 
                 name,
                 catatan
             });
