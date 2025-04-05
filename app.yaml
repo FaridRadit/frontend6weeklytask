@@ -1,5 +1,2 @@
-runtime: nodejs18
-entrypoint: npm run serve
-handlers:
-  - url: /
-    static_dir: build
+runtime: nodejs20
+service: default
