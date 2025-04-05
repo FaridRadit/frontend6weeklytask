@@ -1,2 +1,13 @@
 runtime: nodejs20
-service: default
+
+handlers:
+  # Serve index.html for all routes (important for React Router)
+  - url: /.*
+    static_files: index.html
+    upload: index.html
+    secure: always
+
+  # Serve static assets
+  - url: /(.*)
+    static_files: \1
+    upload: (.*)
