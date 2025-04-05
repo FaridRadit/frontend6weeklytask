@@ -1,5 +1,6 @@
 steps:
-    - name: 'node:20'
+  # Install dependencies
+  - name: 'node:20'
     entrypoint: 'npm'
     args: ['install']
 
@@ -16,6 +17,8 @@ steps:
   # Deploy ke App Engine
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy', 'build/app.yaml', '--quiet']
+
+timeout: 900s
 
 options:
   logging: CLOUD_LOGGING_ONLY
