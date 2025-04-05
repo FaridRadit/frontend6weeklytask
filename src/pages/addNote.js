@@ -11,7 +11,7 @@ function AddNote() {
     const addNote = async (e) => {
         e.preventDefault(); // Cegah refresh halaman
         try {
-            await axios.post('http://localhost:5000/createNote', { // Perbaiki endpoint
+            await axios.post('http://34.72.240.54/createNote', { // Perbaiki endpoint
                 name, // Perbaikan: Properti backend harus cocok dengan database
                 catatan
             });
