@@ -9,17 +9,16 @@ steps:
     entrypoint: 'npm'
     args: ['run', 'build']
 
-  # Copy build output to the "build" folder expected by App Engine
-  - name: 'gcr.io/cloud-builders/gsutil'
+  # Copy app.yaml into the build directory
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
-      - |
-        mkdir -p ./appengine-build && cp -r build/* ./appengine-build/
+      - 'cp app.yaml build/'
 
-  # Deploy to App Engine
+  # Deploy from the build directory
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy', '--quiet']
-    dir: 'appengine-build'
+    dir: 'build'
 
 timeout: '900s'
