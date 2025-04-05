@@ -22,3 +22,5 @@ steps:
     dir: 'build'
 
 timeout: '900s'
+options:
+  logging: CLOUD_LOGGING_ONLY
