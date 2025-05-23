@@ -1,65 +1,90 @@
 import React, { useState } from "react";
-import { Col, Container, Row, Form, Button } from "react-bootstrap";
+import { Col, Container, Row, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Layout from "./Layout.js"; 
 
 function AddNote() {
-    const [name, setNama] = useState(""); // Perbaikan: setName → setNama
-    const [catatan, setCatatan] = useState("");
-    const navigate = useNavigate(); // Pindahkan ke atas sebelum digunakan
+    const [title, setTitle] = useState(""); 
+    const [content, setContent] = useState(""); 
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const addNote = async (e) => {
-        e.preventDefault(); // Cegah refresh halaman
+        e.preventDefault();
+        setError("");
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            setError("Anda harus login untuk menambah catatan.");
+            navigate('/login'); // Redirect ke login jika tidak ada token
+            return;
+        }
+
         try {
-            await axios.post('https://backend-service-130852023885.us-central1.run.app/createNote', { // Perbaiki endpoint
-                name, // Perbaikan: Properti backend harus cocok dengan database
-                catatan
+            await axios.post('http://localhost:8080/api/notes', { // Perbaiki endpoint
+                title, 
+                content 
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Tambahkan JWT token
+                }
             });
+            alert("Catatan berhasil ditambahkan!");
             navigate('/'); // Redirect ke halaman utama
-        } catch (error) {
-            console.error("Error adding note:", error.message);
+        } catch (err) {
+            console.error("Error adding note:", err.response ? err.response.data : err.message);
+            setError(err.response?.data?.message || "Gagal menambahkan catatan.");
+            if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                localStorage.removeItem('jwtToken');
+                navigate('/login');
+            }
         }
     };
 
     return (
-        <Container className="mt-5">
-            <Row>
-                <Col style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                    
-                    <Form className="col-6" onSubmit={addNote}>
-                        <Form.Group className="mb-4 mt-5" controlId="name">
-                            <Form.Label>Nama</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter Name"
-                                value={name}
-                                onChange={(e) => setNama(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
+        <Layout> {/* Bungkus dengan Layout */}
+            <Container className="mt-5">
+                <Row>
+                    <Col style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}>
+                        <Form className="col-6" onSubmit={addNote}>
+                            <h2 className="text-center mb-4">Tambah Catatan Baru</h2>
+                            {error && <Alert variant="danger">{error}</Alert>}
 
-                        <Form.Group className="mb-3 mt-2" controlId="catatan">
-                            <Form.Label>Catatan</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Note"
-                                value={catatan}
-                                onChange={(e) => setCatatan(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
+                            <Form.Group className="mb-4 mt-5" controlId="title">
+                                <Form.Label>Judul</Form.Label> {/* Ubah Nama menjadi Judul */}
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Masukkan Judul Catatan"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    required
+                                />
+                            </Form.Group>
 
-                        <Button variant="primary" type="submit" className="mt-2">
-                            Submit
-                        </Button>
-                    </Form>
-                </Col>
-            </Row>
-        </Container>
+                            <Form.Group className="mb-3 mt-2" controlId="content">
+                                <Form.Label>Konten</Form.Label> 
+                                <Form.Control
+                                    as="textarea" 
+                                    rows={5}
+                                    placeholder="Tulis catatan Anda di sini"
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Button variant="primary" type="submit" className="mt-2">
+                                Simpan Catatan
+                            </Button>
+                        </Form>
+                    </Col>
+                </Row>
+            </Container>
+        </Layout>
     );
 }
 

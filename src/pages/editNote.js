@@ -1,62 +1,117 @@
 import React, { useState, useEffect } from "react";
-import { Col, Container, Row, Form, Button } from "react-bootstrap";
+import { Col, Container, Row, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import Layout from "./Layout.js"; 
 
 function EditNote() {
-    const [name, setNama] = useState(""); 
-    const [catatan, setCatatan] = useState("");
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     const { id } = useParams();
 
-   
-    const Editnote = async (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        getNoteById(); 
+    }, [id]); 
+
+    const getNoteById = async () => {
+        setError("");
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            setError("Anda harus login untuk mengedit catatan.");
+            navigate('/login');
+            return;
+        }
+
         try {
-            await axios.patch(`https://backend-service-130852023885.us-central1.run.app/updateNote/${id}`, { 
-                name,
-                catatan
+            const response = await axios.get(`http://localhost:8080/api/notes/${id}`, { // Perbaiki endpoint
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
+            setTitle(response.data.title);
+            setContent(response.data.content);
+        } catch (err) {
+            console.error("Error fetching note for edit:", err.response ? err.response.data : err.message);
+            setError(err.response?.data?.message || "Gagal mengambil catatan untuk diedit.");
+            if (err.response && (err.response.status === 401 || err.response.status === 403 || err.response.status === 404)) {
+                localStorage.removeItem('jwtToken');
+                navigate('/login'); 
+            }
+        }
+    };
+
+    const handleUpdateNote = async (e) => { // Ubah Editnote menjadi handleUpdateNote
+        e.preventDefault();
+        setError("");
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            setError("Anda harus login untuk memperbarui catatan.");
+            return;
+        }
+
+        try {
+            await axios.patch(`http://localhost:8080/api/notes/${id}`, { // Perbaiki endpoint
+                title,
+                content
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            alert("Catatan berhasil diperbarui!");
             navigate('/');
-        } catch (error) {
-            console.error("Error updating note:", error.message);
+        } catch (err) {
+            console.error("Error updating note:", err.response ? err.response.data : err.message);
+            setError(err.response?.data?.message || "Gagal memperbarui catatan.");
+            if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                localStorage.removeItem('jwtToken');
+                navigate('/login');
+            }
         }
     };
 
     return (
-        <Container className="mt-5">
-            <Row>
-                <Col style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <Form className="col-6" onSubmit={Editnote}>
-                        <Form.Group className="mb-4 mt-5" controlId="nama">
-                            <Form.Label>Nama</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter Name"
-                                value={name} //
-                                onChange={(e) => setNama(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
+        <Layout> {/* Bungkus dengan Layout */}
+            <Container className="mt-5">
+                <Row>
+                    <Col style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <Form className="col-6" onSubmit={handleUpdateNote}> {/* Gunakan handleUpdateNote */}
+                            <h2 className="text-center mb-4">Edit Catatan</h2>
+                            {error && <Alert variant="danger">{error}</Alert>}
 
-                        <Form.Group className="mb-3 mt-2" controlId="catatan">
-                            <Form.Label>Catatan</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Note"
-                                value={catatan}
-                                onChange={(e) => setCatatan(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
+                            <Form.Group className="mb-4 mt-5" controlId="title">
+                                <Form.Label>Judul</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Enter Title"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    required
+                                />
+                            </Form.Group>
 
-                        <Button variant="primary" type="submit" className="mt-2">
-                            Update Note
-                        </Button>
-                    </Form>
-                </Col>
-            </Row>
-        </Container>
+                            <Form.Group className="mb-3 mt-2" controlId="content">
+                                <Form.Label>Konten</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={5}
+                                    placeholder="Note Content"
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Button variant="primary" type="submit" className="mt-2">
+                                Update Catatan
+                            </Button>
+                        </Form>
+                    </Col>
+                </Row>
+            </Container>
+        </Layout>
     );
 }
 
