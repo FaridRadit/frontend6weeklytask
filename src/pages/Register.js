@@ -16,7 +16,7 @@ function Register() {
         setError(""); // Clear previous errors
         setSuccess(""); // Clear previous success
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/register', {
+            const response = await axios.post('https://backend-service-130852023885.us-central1.run.app/api/auth/register', {
                 name,
                 email,
                 password

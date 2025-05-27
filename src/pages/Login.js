@@ -13,7 +13,7 @@ function Login() {
         e.preventDefault();
         setError(""); 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', {
+            const response = await axios.post('https://backend-service-130852023885.us-central1.run.app/api/auth/login', {
                 email,
                 password
             });

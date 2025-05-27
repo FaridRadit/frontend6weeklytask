@@ -23,7 +23,7 @@ function Noteuser() {
     }
 
     try {
-      const response = await axios.get("http://localhost:8080/api/notes", { 
+      const response = await axios.get("https://backend-service-130852023885.us-central1.run.app/api/notes", { 
         headers: {
           Authorization: `Bearer ${token}` 
         }
@@ -48,7 +48,7 @@ function Noteuser() {
     }
 
     try {
-      await axios.delete(`http://localhost:8080/api/notes/${id}`, { // Perbaiki endpoint
+      await axios.delete(`https://backend-service-130852023885.us-central1.run.app/api/notes/${id}`, { // Perbaiki endpoint
         headers: {
           Authorization: `Bearer ${token}` // Tambahkan JWT token
         }

@@ -25,7 +25,7 @@ function EditNote() {
         }
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/notes/${id}`, { // Perbaiki endpoint
+            const response = await axios.get(`https://backend-service-130852023885.us-central1.run.app/api/notes/${id}`, { // Perbaiki endpoint
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -52,7 +52,7 @@ function EditNote() {
         }
 
         try {
-            await axios.patch(`http://localhost:8080/api/notes/${id}`, { // Perbaiki endpoint
+            await axios.patch(`https://backend-service-130852023885.us-central1.run.app/api/notes/${id}`, { // Perbaiki endpoint
                 title,
                 content
             }, {

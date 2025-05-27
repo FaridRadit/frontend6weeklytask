@@ -21,7 +21,7 @@ function AddNote() {
         }
 
         try {
-            await axios.post('http://localhost:8080/api/notes', { // Perbaiki endpoint
+            await axios.post('https://backend-service-130852023885.us-central1.run.app/api/notes', { // Perbaiki endpoint
                 title, 
                 content 
             }, {
